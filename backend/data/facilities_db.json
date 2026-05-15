@@ -1,0 +1,54 @@
+[
+  {
+    "id": "fac_001",
+    "type": "rescue_unit",
+    "name": "F-8 Rescue Station",
+    "lat": 33.7080,
+    "lng": 73.0479,
+    "status": "available",
+    "units": [
+      { "id": "res_001", "name": "F-8 Rescue Unit Alpha", "type": "water_rescue", "status": "available" },
+      { "id": "res_002", "name": "F-8 Rescue Unit Beta", "type": "water_rescue", "status": "available" }
+    ],
+    "source": "simulated"
+  },
+  {
+    "id": "fac_002",
+    "type": "hospital",
+    "name": "PIMS Hospital",
+    "lat": 33.7161,
+    "lng": 73.0738,
+    "status": "operational",
+    "capacity_remaining": 120,
+    "source": "simulated"
+  },
+  {
+    "id": "fac_003",
+    "type": "fire_station",
+    "name": "I-8 Fire Station",
+    "lat": 33.6950,
+    "lng": 73.0650,
+    "status": "available",
+    "source": "simulated"
+  },
+  {
+    "id": "fac_004",
+    "type": "depot",
+    "name": "G-9 Emergency Supply Depot",
+    "lat": 33.7006,
+    "lng": 73.0322,
+    "status": "operational",
+    "inventory_summary": "tents: 50, food_packs: 300, medical_kits: 20",
+    "source": "simulated"
+  },
+  {
+    "id": "fac_005",
+    "type": "police",
+    "name": "G-10 Police Station",
+    "lat": 33.6910,
+    "lng": 73.0450,
+    "status": "deployed",
+    "note": "Already at scene managing traffic",
+    "source": "simulated"
+  }
+]

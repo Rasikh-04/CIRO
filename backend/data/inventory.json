@@ -1,0 +1,73 @@
+[
+  {
+    "id": "inv_001",
+    "name": "F-8 Rescue Unit Alpha",
+    "type": "water_rescue",
+    "depot": "F-8 Rescue Station",
+    "lat": 33.7080,
+    "lng": 73.0479,
+    "status": "available",
+    "quantity": 1,
+    "source": "simulated"
+  },
+  {
+    "id": "inv_002",
+    "name": "F-8 Rescue Unit Beta",
+    "type": "water_rescue",
+    "depot": "F-8 Rescue Station",
+    "lat": 33.7080,
+    "lng": 73.0479,
+    "status": "available",
+    "quantity": 1,
+    "source": "simulated"
+  },
+  {
+    "id": "inv_003",
+    "name": "Rescue Ambulance Unit 1",
+    "type": "ambulance",
+    "depot": "PIMS Hospital",
+    "lat": 33.7161,
+    "lng": 73.0738,
+    "status": "available",
+    "quantity": 1,
+    "source": "simulated"
+  },
+  {
+    "id": "inv_004",
+    "name": "Emergency Tent Pack",
+    "type": "supplies",
+    "subtype": "tents",
+    "depot": "G-9 Emergency Supply Depot",
+    "lat": 33.7006,
+    "lng": 73.0322,
+    "status": "available",
+    "quantity": 50,
+    "unit": "units",
+    "source": "simulated"
+  },
+  {
+    "id": "inv_005",
+    "name": "Food Relief Packs",
+    "type": "supplies",
+    "subtype": "food_packs",
+    "depot": "G-9 Emergency Supply Depot",
+    "lat": 33.7006,
+    "lng": 73.0322,
+    "status": "available",
+    "quantity": 300,
+    "unit": "packs",
+    "source": "simulated"
+  },
+  {
+    "id": "inv_006",
+    "name": "Rubber Rescue Boats",
+    "type": "equipment",
+    "subtype": "rubber_boats",
+    "depot": "F-8 Rescue Station",
+    "lat": 33.7080,
+    "lng": 73.0479,
+    "status": "available",
+    "quantity": 2,
+    "source": "simulated"
+  }
+]

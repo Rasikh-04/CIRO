@@ -1,0 +1,42 @@
+{
+  "source": "simulated",
+  "timestamp": "2026-05-13T14:30:00Z",
+  "traffic_data": [
+    {
+      "road": "Srinagar Highway",
+      "segment": "G-10 interchange to I-10 merge",
+      "lat": 33.6880,
+      "lng": 73.0550,
+      "status": "severe_congestion",
+      "speed_kmh": 4,
+      "normal_speed_kmh": 60,
+      "congestion_level": "severe",
+      "incident_type": "flooding",
+      "source": "simulated"
+    },
+    {
+      "road": "Margalla Road",
+      "segment": "G-10 to F-8 section",
+      "lat": 33.7200,
+      "lng": 73.0450,
+      "status": "clear",
+      "speed_kmh": 55,
+      "normal_speed_kmh": 60,
+      "congestion_level": "none",
+      "incident_type": null,
+      "source": "simulated"
+    },
+    {
+      "road": "Jinnah Avenue",
+      "segment": "G-10 to G-8",
+      "lat": 33.6900,
+      "lng": 73.0400,
+      "status": "moderate_congestion",
+      "speed_kmh": 25,
+      "normal_speed_kmh": 60,
+      "congestion_level": "moderate",
+      "incident_type": "traffic_diversion",
+      "source": "simulated"
+    }
+  ]
+}

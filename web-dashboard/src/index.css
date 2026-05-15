@@ -1,0 +1,21 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+}
+
+/* Leaflet map fill parent */
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
+  background: #0F172A;
+}
+
+/* Dark tile override to match dashboard theme */
+.leaflet-tile {
+  filter: brightness(0.85) saturate(0.9);
+}

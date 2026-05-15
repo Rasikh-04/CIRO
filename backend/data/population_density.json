@@ -1,0 +1,6 @@
+{
+  "G-10": { "population": 45000, "density_per_km2": 8200 },
+  "G-9":  { "population": 52000, "density_per_km2": 9100 },
+  "F-8":  { "population": 38000, "density_per_km2": 6700 },
+  "I-10": { "population": 61000, "density_per_km2": 10200 }
+}
