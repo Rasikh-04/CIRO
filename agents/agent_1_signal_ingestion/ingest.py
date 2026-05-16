@@ -181,9 +181,13 @@ def process_social_posts(posts: list) -> list:
 
 def post_to_backend(signals: list):
     url = f"{BACKEND_URL}/api/signals/ingest"
+    payload = {
+        "signals": signals,
+        "ingest_timestamp": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
+    }
     log("ACTION", f"POST {url} ({len(signals)} signals)")
     try:
-        resp = requests.post(url, json=signals, timeout=5)
+        resp = requests.post(url, json=payload, timeout=5)
         resp.raise_for_status()
         log("ACTION", f"POST {url} → {resp.status_code} OK")
     except Exception as e:
