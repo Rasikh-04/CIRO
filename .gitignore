@@ -43,7 +43,8 @@ Thumbs.db
 *.pem
 service-account*.json
 
-#tasks
-*./DAY_2_PLAN.md
-*./CLAUDE.md
-*.claude/
+# Local project files (keep locally, don't commit)
+CLAUDE.md
+DAY_*_STATUS.md
+DAY_*_PLAN.md
+.claude/
