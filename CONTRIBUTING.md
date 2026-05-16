@@ -3,8 +3,8 @@
 ## Setup (First Time Only)
 
 ```bash
-git clone https://github.com/Rasikh-04/ciro-hackathon.git
-cd ciro-hackathon
+git clone https://github.com/Rasikh-04/CIRO.git
+cd CIRO
 git config user.name "Your Name"
 git config user.email "your.email@example.com"
 ```
