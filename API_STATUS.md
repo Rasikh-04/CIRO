@@ -30,13 +30,45 @@
 
 **Status:** Deferred to May 16
 
-### Checkpoint 2: May 18 End-to-End Test
-- [ ] All 6 agents complete pipeline sequentially
+### Checkpoint 2: May 18 Schema Audit (Tabeen — completed 2026-05-17)
+
+Full cross-check of Agent 1/2/3 outputs against backend Pydantic schemas and DB models.
+Results below — **5 backend fixes needed before end-to-end test can pass.**
+
+#### Fixed (Agent side — Tabeen, merged)
+- [x] **ingest.py `post_to_backend()`** was sending a raw `list` to `/api/signals/ingest`.
+      Backend `SignalIngestRequest` expects `{"signals": [...], "ingest_timestamp": "..."}`.
+      **Fixed in `tabeen/may18-integration` branch.**
+
+#### Needs Fix — Backend (Ahmar)
+
+| # | File | Issue | Impact |
+|---|---|---|---|
+| B1 | `backend/app/api/crisis.py` | `/api/crisis/operational` endpoint **does not exist** and is not registered in `main.py` | Agent 3 POST will get 404 — ops picture never stored |
+| B2 | `backend/app/models/crisis.py` | `Crisis` DB model has no `contributing_signals` column | Signal IDs sent by Agent 2 are silently dropped — audit trail broken |
+| B3 | `backend/app/models/operational_picture.py` | `OperationalPicture` DB model has no `affected_zone` column | Dashboard/Agent 6 can't render the crisis zone boundary |
+| B4 | `backend/app/api/signals.py` | `GET /api/signals/latest` returns raw SQLAlchemy objects — `location` is a GeoAlchemy2 `Geography` type, not JSON-serializable | Agent 2 live-fetch will crash; fallback to local file kicks in |
+| B5 | `backend/app/api/crisis.py` | `GET /api/crisis/latest` same issue — returns raw `Crisis` ORM object with non-serializable `location` field | Agent 3 live-fetch will crash; fallback to local file kicks in |
+
+**Suggested fixes for Ahmar:**
+- B1: Add `@router.post("/crisis/operational")` handler in `crisis.py`, register in `main.py`
+- B2: Add `contributing_signals = Column(JSONB)` to `Crisis` model; store in `crisis_detected()`
+- B3: Add `affected_zone = Column(JSONB)` to `OperationalPicture` model; store in the new B1 handler
+- B4 & B5: Add Pydantic `response_model` to both GET routes, serializing `location` via `geoalchemy2.shape.to_shape()` → dict
+
+**Workaround in place:** Agent 2 (`classify.py`) and Agent 3 (`situational.py`) both have try/except fallbacks that read from local `output/*.json` files when the backend GET endpoints fail. The pipeline will function in demo mode without a live backend.
+
+### Checkpoint 3: May 19 End-to-End Test
+- [ ] Backend running with B1–B5 fixes applied
+- [ ] Agent 1 POSTs to `/api/signals/ingest` → 200 OK, `{"accepted": 12}`
+- [ ] Agent 2 GETs from `/api/signals/latest` → parses correctly
+- [ ] Agent 2 POSTs to `/api/crisis/detected` → 200 OK, `{"crisis_id": "CRS_20260513_001"}`
+- [ ] Agent 3 GETs from `/api/crisis/latest` → parses correctly
+- [ ] Agent 3 POSTs to `/api/crisis/operational` → 200 OK
 - [ ] Dashboard updates via WebSocket
 - [ ] Mobile app shows active crisis with correct location
-- [ ] CIRO_agent_trace.log consolidated from all agents
 
-**Status:** In planning
+**Status:** Blocked on B1–B5
 
 ---
 
