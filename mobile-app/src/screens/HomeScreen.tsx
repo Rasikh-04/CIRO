@@ -77,8 +77,8 @@ export default function HomeScreen({ navigation }: any) {
         >
           <Circle
             center={{
-              latitude: selectedCrisis.crisis.location.latitude,
-              longitude: selectedCrisis.crisis.location.longitude,
+              latitude: selectedCrisis.crisis.location.lat,
+              longitude: selectedCrisis.crisis.location.lng,
             }}
             radius={(selectedCrisis.crisis.location.affected_radius_km || 2) * 1000}
             fillColor="rgba(220, 38, 38, 0.2)"
@@ -87,8 +87,8 @@ export default function HomeScreen({ navigation }: any) {
           />
           <Marker
             coordinate={{
-              latitude: selectedCrisis.crisis.location.latitude,
-              longitude: selectedCrisis.crisis.location.longitude,
+              latitude: selectedCrisis.crisis.location.lat,
+              longitude: selectedCrisis.crisis.location.lng,
             }}
             title={selectedCrisis.crisis.type}
             description={`Severity: ${selectedCrisis.crisis.severity}/5`}

@@ -12,7 +12,7 @@ import { useFocusEffect } from "@react-navigation/native";
 import { fetchActiveCrises } from "../lib/api";
 import { CrisisAlert } from "../types";
 
-export default function AlertsScreen() {
+export default function AlertsScreen({ navigation }: any) {
   const [crises, setCrises] = useState<CrisisAlert[]>([]);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
@@ -111,7 +111,10 @@ export default function AlertsScreen() {
                 </Text>
               </View>
 
-              <TouchableOpacity style={styles.actionButton}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={() => navigation.navigate("Routes")}
+              >
                 <Text style={styles.actionButtonText}>Get Safe Routes</Text>
               </TouchableOpacity>
             </View>

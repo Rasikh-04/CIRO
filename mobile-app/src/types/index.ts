@@ -17,8 +17,8 @@ export interface SignalEvent {
 // Schema B — Crisis Event
 export interface CrisisLocation {
   primary: string;
-  latitude: number;
-  longitude: number;
+  lat: number;
+  lng: number;
   affected_radius_km?: number;
 }
 
@@ -170,8 +170,11 @@ export interface CrisisAlert {
   type: string;
   severity: number;
   location: CrisisLocation;
+  location_name: string;
   affected_population: number;
   timestamp: string;
+  stage: string;
+  detected_at: string;
 }
 
 export interface SafeRoute {
