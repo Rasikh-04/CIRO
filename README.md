@@ -58,6 +58,29 @@ All 6 agents run as separate workspaces in Antigravity's Agent Manager. Antigrav
 
 **Urban flooding in G-10, Islamabad** — 3 corroborating signals detected → crisis confirmed (confidence 0.89) → F-8 Rescue Unit Alpha dispatched via Margalla Road → 61% congestion reduction simulated → public alerts sent → SITREP generated.
 
+## API Endpoints
+
+| Endpoint | Method | Owner | Schema | Status |
+|---|---|---|---|---|
+| `/api/signals/ingest` | POST | Agent 1 (Tabeen) | SignalEvent[] | Ready |
+| `/api/signals/latest` | GET | Agent 2 (Tabeen) | SignalEvent[] | Ready |
+| `/api/crisis/detected` | POST | Agent 2 (Tabeen) | CrisisEvent | Ready |
+| `/api/crisis/latest` | GET | Agent 3 (Tabeen) | CrisisEvent | Ready |
+| `/api/crisis/operational` | POST | Agent 3 (Tabeen) | OperationalPicture | Ready |
+| `/api/resources/available` | GET | Agent 4 (Ahmar) | Resource[] | Ready |
+| `/api/crisis/dispatch` | POST | Agent 4 (Ahmar) | DispatchPlan | Ready |
+| `/api/crisis/simulation` | POST | Agent 5 (Ahmar) | SimulationResult | Ready |
+| `/api/crisis/full/{id}` | GET | Agent 6 (Abdul Mannan) | DashboardState | Ready |
+| `/api/crisis/complete` | POST | Agent 6 (Abdul Mannan) | DashboardState | Ready |
+| `/api/crisis/active` | GET | Mobile App | Summary list | Ready |
+| `/api/crisis/{id}` | GET | Web Dashboard | CrisisEvent | Ready |
+| `/api/resources/{id}/status` | PATCH | Agent 4 (Ahmar) | — | Ready |
+| `/api/crisis/{id}/safe-routes` | GET | Mobile Safe Routes | SafeRoute[] | Pending |
+| `/ws/crisis/{crisis_id}` | WebSocket | Web Dashboard | DashboardState | Ready |
+| `/ws/command` | WebSocket | All clients | Crisis feed | Ready |
+
+All schemas (A–F) are defined in [`docs/06_shared_integration_contract.md`](docs/06_shared_integration_contract.md). Base URL: `http://localhost:8000` (dev).
+
 ## Setup
 
 See [docs/07_integration_guide.md](docs/07_integration_guide.md) for full setup instructions.

@@ -45,3 +45,4 @@ service-account*.json
 
 #tasks
 *./DAY_2_PLAN.md
+*./CLAUDE.md

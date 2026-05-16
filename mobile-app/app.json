@@ -13,7 +13,10 @@
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTabletMode": true,
-      "bundleIdentifier": "com.aiseekho.ciro"
+      "bundleIdentifier": "com.aiseekho.ciro",
+      "config": {
+        "googleMapsApiKey": "REPLACE_WITH_YOUR_AIZA_KEY"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -21,7 +24,12 @@
         "backgroundColor": "#0F172A"
       },
       "package": "com.aiseekho.ciro",
-      "permissions": ["android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION"]
+      "permissions": ["android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION"],
+      "config": {
+        "googleMaps": {
+          "apiKey": "REPLACE_WITH_YOUR_AIZA_KEY"
+        }
+      }
     },
     "web": {
       "bundler": "metro",

@@ -50,6 +50,7 @@ export default function MapView({ dashboardState, trafficView }: Props) {
   const radiusM = (crisis?.location.affected_radius_km ?? 2.5) * 1000;
 
   return (
+  <div style={{ position: "relative", width: "100%", height: "100%" }}>
     <MapContainer
       center={ISLAMABAD_CENTER}
       zoom={13}
@@ -165,5 +166,34 @@ export default function MapView({ dashboardState, trafficView }: Props) {
         </Circle>
       )}
     </MapContainer>
+
+    {simulation?.routes && simulation.routes.length > 0 && (
+      <div
+        style={{
+          position: "absolute",
+          bottom: "16px",
+          right: "16px",
+          zIndex: 1000,
+          background: "rgba(15,23,42,0.9)",
+          border: "1px solid #334155",
+          borderRadius: "6px",
+          padding: "8px 12px",
+          fontSize: "11px",
+          color: "#94A3B8",
+          pointerEvents: "none",
+        }}
+      >
+        <div style={{ fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "4px" }}>
+          Unit Routes
+        </div>
+        {simulation.routes.map((r, i) => (
+          <div key={i} style={{ display: "flex", alignItems: "center", gap: "6px", color: "#F8FAFC" }}>
+            <div style={{ width: "16px", height: "3px", background: "#16A34A", borderRadius: "2px" }} />
+            {r.unit}
+          </div>
+        ))}
+      </div>
+    )}
+  </div>
   );
 }
