@@ -1,7 +1,7 @@
 import axios from "axios";
 import { DashboardState, CrisisAlert, SafeRoute } from "../types";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL = process.env.EXPO_PUBLIC_BACKEND_URL || "http://10.232.175.253:8000";
 
 const api = axios.create({
   baseURL: BACKEND_URL,
