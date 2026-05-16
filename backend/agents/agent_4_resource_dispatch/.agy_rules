@@ -1,0 +1,10 @@
+# Agent 4 — Resource Gap & Dispatch Rules
+- Always read ops_pic.json from Agent 3 output before calculating requirements
+- Use OCHA standard rates: tents 1/5 people, food 3/person/day, medical 1/50, water rescue 1/500
+- Priority formula: severity × (1/distance_km) × log(population_at_risk)
+- Always pick nearest available unit per resource type using haversine distance
+- Each dispatch order must include a 2-3 sentence reason field
+- Write output to output/dispatch.json before POSTing to backend
+- POST to: http://localhost:8000/api/crisis/dispatch
+- Log every step with timestamp prefix
+- Do not halt if backend POST fails — write output file regardless

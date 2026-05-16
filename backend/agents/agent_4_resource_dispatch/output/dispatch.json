@@ -1,0 +1,81 @@
+{
+  "crisis_id": "CRS_20260513_001",
+  "dispatch_plan": {
+    "priority_ranking": [
+      {
+        "zone": "G-10, Islamabad",
+        "priority_score": 14.34,
+        "reason": "Highest severity flood event with 3 corroborating signals. G-10 has highest population density in affected area. Main artery (Srinagar Highway) blocked \u2014 alternate via Margalla Road confirmed clear."
+      }
+    ],
+    "dispatch_orders": [
+      {
+        "order_id": "DO_001",
+        "unit": "F-8 Rescue Unit Alpha",
+        "unit_type": "water_rescue",
+        "destination": "G-10 Sector, Islamabad",
+        "destination_lat": 33.6844,
+        "destination_lng": 73.0479,
+        "origin_lat": 33.708,
+        "origin_lng": 73.0479,
+        "reason": "Urban flooding requires water rescue capability. F-8 Rescue Unit Alpha is the nearest available water rescue unit at 2.62km from crisis center. Routed via Margalla Road \u2014 Srinagar Highway is blocked per operational picture.",
+        "eta_minutes": 5
+      },
+      {
+        "order_id": "DO_002",
+        "unit": "F-8 Rescue Unit Beta",
+        "unit_type": "water_rescue",
+        "destination": "G-10 Sector, Islamabad",
+        "destination_lat": 33.6844,
+        "destination_lng": 73.0479,
+        "origin_lat": 33.708,
+        "origin_lng": 73.0479,
+        "reason": "Urban flooding requires water rescue capability. F-8 Rescue Unit Beta is the nearest available water rescue unit at 2.62km from crisis center. Routed via Margalla Road \u2014 Srinagar Highway is blocked per operational picture.",
+        "eta_minutes": 5
+      },
+      {
+        "order_id": "DO_003",
+        "unit": "Rescue Ambulance Unit 1",
+        "unit_type": "ambulance",
+        "destination": "G-10 Sector, Islamabad",
+        "destination_lat": 33.6844,
+        "destination_lng": 73.0479,
+        "origin_lat": 33.7161,
+        "origin_lng": 73.0738,
+        "reason": "Medical support required for flood victims. Rescue Ambulance Unit 1 dispatched from PIMS Hospital at 4.26km distance. Proceeding via alternate route due to Srinagar Highway blockage.",
+        "eta_minutes": 9
+      }
+    ],
+    "resource_gaps": [
+      {
+        "item": "tents",
+        "required": 2400,
+        "available": 50,
+        "gap": 2350,
+        "mitigation": "Request additional tents from nearest depot or mutual aid"
+      },
+      {
+        "item": "food_packs",
+        "required": 36000,
+        "available": 300,
+        "gap": 35700,
+        "mitigation": "Request additional food_packs from nearest depot or mutual aid"
+      },
+      {
+        "item": "medical_kits",
+        "required": 240,
+        "available": 0,
+        "gap": 240,
+        "mitigation": "Request additional medical_kits from nearest depot or mutual aid"
+      },
+      {
+        "item": "water_rescue",
+        "required": 24,
+        "available": 2,
+        "gap": 22,
+        "mitigation": "Request additional water_rescue from nearest depot or mutual aid"
+      }
+    ]
+  },
+  "generated_at": "2026-05-16T16:28:18.237421+00:00"
+}
