@@ -189,7 +189,7 @@ def post_to_backend(signals: list):
     try:
         resp = requests.post(url, json=payload, timeout=5)
         resp.raise_for_status()
-        log("ACTION", f"POST {url} → {resp.status_code} OK")
+        log("ACTION", f"POST {url} -> {resp.status_code} OK")
     except Exception as e:
         log("WARNING", f"Backend not available ({e}) — output saved locally, retry when backend is up")
 

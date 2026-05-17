@@ -44,6 +44,9 @@ Thumbs.db
 # Docker
 *.log
 
+# Mock backend SQLite DB (local test artifact)
+backend/mock_ciro.db
+
 # Secrets
 *.pem
 service-account*.json
