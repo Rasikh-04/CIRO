@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import CrisisPanel from "./components/CrisisPanel";
 import MapView from "./components/MapView";
@@ -13,6 +13,9 @@ export default function App() {
   const [activeTab, setActiveTab] = useState<BottomTab>("trace");
   const [trafficView, setTrafficView] = useState<TrafficView>("after");
   const [wsStatus, setWsStatus] = useState<"connecting" | "live" | "offline">("connecting");
+  const [triggerStatus, setTriggerStatus] = useState<"idle" | "loading" | "ok" | "error">("idle");
+  const [triggerError, setTriggerError] = useState<string | null>(null);
+  const triggerTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const { data: crises = [], isError: crisesError } = useQuery<ActiveCrisisSummary[]>({
     queryKey: ["activeCrises"],
@@ -47,12 +50,21 @@ export default function App() {
   useCommandWebSocket(handleWsMessage, useCallback(() => setWsStatus("live"), []));
 
   const handleTriggerDemo = useCallback(async () => {
+    if (triggerStatus === "loading") return;
+    if (triggerTimer.current) clearTimeout(triggerTimer.current);
+    setTriggerStatus("loading");
+    setTriggerError(null);
     try {
       await triggerDemo();
-    } catch {
-      // Backend offline — manual agent run needed
+      setTriggerStatus("ok");
+      triggerTimer.current = setTimeout(() => setTriggerStatus("idle"), 3000);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : String(err);
+      setTriggerStatus("error");
+      setTriggerError(msg);
+      triggerTimer.current = setTimeout(() => setTriggerStatus("idle"), 5000);
     }
-  }, []);
+  }, [triggerStatus]);
 
   const handleSelectCrisis = useCallback((id: string) => {
     setSelectedId(id);
@@ -106,6 +118,8 @@ export default function App() {
           selectedId={selectedId}
           onSelect={handleSelectCrisis}
           onTriggerDemo={handleTriggerDemo}
+          triggerStatus={triggerStatus}
+          triggerError={triggerError}
         />
 
         {/* Center + bottom */}
@@ -117,7 +131,7 @@ export default function App() {
             {/* Backend offline banner */}
             {wsStatus === "offline" && (
               <div className="absolute top-2 left-1/2 -translate-x-1/2 bg-critical text-white text-xs px-3 py-1.5 rounded shadow-lg z-10">
-                Backend offline — start backend at localhost:8000
+                Backend offline — check connection
               </div>
             )}
           </div>
