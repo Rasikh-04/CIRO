@@ -11,7 +11,7 @@ export async function fetchActiveCrises(): Promise<ActiveCrisisSummary[]> {
 }
 
 export async function fetchCrisis(id: string): Promise<DashboardState> {
-  const { data } = await client.get(`/api/crisis/${id}`);
+  const { data } = await client.get(`/api/crisis/full/${id}`);
   return data;
 }
 
@@ -20,6 +20,8 @@ export async function fetchFullCrisis(id: string): Promise<DashboardState> {
   return data;
 }
 
-export async function triggerDemo(): Promise<void> {
-  await client.post("/api/demo/trigger", { scenario: "g10_flood" });
+export type DemoScenario = "g10_flood" | "i8_heat" | "f10_accident";
+
+export async function triggerDemo(scenario: DemoScenario = "g10_flood"): Promise<void> {
+  await client.post("/api/demo/trigger", { scenario });
 }

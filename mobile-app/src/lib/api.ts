@@ -12,7 +12,7 @@ const api = axios.create({
 export async function fetchActiveCrises(): Promise<CrisisAlert[]> {
   try {
     const res = await api.get("/api/crisis/active");
-    return res.data.crises || [];
+    return Array.isArray(res.data) ? res.data : [];
   } catch (err) {
     console.error("Failed to fetch active crises:", err);
     return [];
@@ -22,7 +22,7 @@ export async function fetchActiveCrises(): Promise<CrisisAlert[]> {
 // Fetch full crisis state by ID
 export async function fetchCrisisDetail(crisisId: string): Promise<DashboardState | null> {
   try {
-    const res = await api.get(`/api/crisis/${crisisId}`);
+    const res = await api.get(`/api/crisis/full/${crisisId}`);
     return res.data;
   } catch (err) {
     console.error(`Failed to fetch crisis ${crisisId}:`, err);

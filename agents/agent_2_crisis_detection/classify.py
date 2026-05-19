@@ -15,7 +15,7 @@ CRISIS_OUTPUT = OUTPUT_DIR / "crisis.json"
 BACKEND_URL = os.getenv("CIRO_BACKEND_URL", "http://localhost:8000")
 THRESHOLDS_PATH = BASE_DIR / "thresholds.json"
 
-open(TRACE_LOG, "w").close()
+open(TRACE_LOG, "w", encoding="utf-8").close()
 
 
 def log(level: str, message: str):
@@ -176,7 +176,7 @@ def generate_crisis(cluster: list, thresholds: dict):
         "confidence_score": confidence_score,
         "reasoning": reasoning,
         "contributing_signals": [s["id"] for s in cluster],
-        "status": "confirmed",
+        "status": "detected",
         "detected_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
     }
 

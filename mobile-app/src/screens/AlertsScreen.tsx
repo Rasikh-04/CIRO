@@ -7,10 +7,11 @@ import {
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
+  Alert,
 } from "react-native";
 import { useFocusEffect } from "@react-navigation/native";
-import { fetchActiveCrises } from "../lib/api";
-import { CrisisAlert } from "../types";
+import { fetchActiveCrises, fetchSafeRoutes } from "../lib/api";
+import { CrisisAlert, SafeRoute } from "../types";
 
 export default function AlertsScreen() {
   const [crises, setCrises] = useState<CrisisAlert[]>([]);
@@ -101,17 +102,27 @@ export default function AlertsScreen() {
 
               <View style={styles.alertDetails}>
                 <Text style={styles.location}>
-                  📍 {item.location.primary}
-                </Text>
-                <Text style={styles.population}>
-                  👥 {item.affected_population.toLocaleString()} people at risk
+                  📍 {item.location_name}
                 </Text>
                 <Text style={styles.timestamp}>
-                  ⏰ {new Date(item.timestamp).toLocaleString()}
+                  ⏰ {new Date(item.detected_at).toLocaleString()}
                 </Text>
               </View>
 
-              <TouchableOpacity style={styles.actionButton}>
+              <TouchableOpacity
+                style={styles.actionButton}
+                onPress={async () => {
+                  const routes = await fetchSafeRoutes(item.crisis_id);
+                  if (routes.length === 0) {
+                    Alert.alert("No Routes", "No safe routes available for this crisis.");
+                  } else {
+                    Alert.alert(
+                      "Safe Routes",
+                      routes.map((r) => `${r.name} — ${r.distance_km}km (~${r.eta_minutes}min)`).join("\n")
+                    );
+                  }
+                }}
+              >
                 <Text style={styles.actionButtonText}>Get Safe Routes</Text>
               </TouchableOpacity>
             </View>
@@ -208,10 +219,6 @@ const styles = StyleSheet.create({
     gap: 6,
   },
   location: {
-    fontSize: 13,
-    color: "#CBD5E1",
-  },
-  population: {
     fontSize: 13,
     color: "#CBD5E1",
   },

@@ -31,10 +31,10 @@ BACKEND_URL = os.getenv("CIRO_BACKEND_URL", "http://localhost:8000")
 
 # Add agent_3 dir to path so we can import our helper modules
 sys.path.insert(0, str(BASE_DIR))
-from haversine import haversine, rank_facilities  # noqa: E402
+from haversine import haversine  # noqa: E402
 from osm_query import query_roads, DEFAULT_BBOX   # noqa: E402
 
-open(TRACE_LOG, "w").close()
+open(TRACE_LOG, "w", encoding="utf-8").close()
 
 
 def log(level: str, message: str):

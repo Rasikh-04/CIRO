@@ -1,177 +1,173 @@
-// Schema A — Signal Events (Layer 1)
+// Canonical types matching schemas in docs/06_shared_integration_contract.md
+// Field names must match the backend API responses exactly.
+
+// Schema A — Signal Events
+export interface SignalLocation {
+  district: string;
+  city: string;
+  lat: number;
+  lng: number;
+}
+
 export interface SignalEvent {
-  signal_id: string;
-  source: "twitter" | "facebook" | "weather_api" | "traffic_api" | "simulated";
-  signal_type: "social_media_post" | "weather_alert" | "traffic_anomaly";
-  content: string;
-  location?: {
-    latitude: number;
-    longitude: number;
-    area?: string;
-  };
+  id: string;
+  source: "social_media" | "weather" | "traffic";
+  raw_text: string;
+  normalized: string;
+  location: SignalLocation;
+  signal_type: "flood" | "heatwave" | "accident" | "road_blockage" | "infrastructure_failure";
   timestamp: string;
-  confidence?: number;
-  metadata?: Record<string, unknown>;
+  confidence: number;
+  source_label: "simulated" | "real";
 }
 
 // Schema B — Crisis Event
 export interface CrisisLocation {
   primary: string;
-  latitude: number;
-  longitude: number;
-  affected_radius_km?: number;
+  affected_radius_km: number;
+  lat: number;
+  lng: number;
 }
 
 export interface CrisisEvent {
   crisis_id: string;
-  type: string;
-  severity: number;
-  confidence: number;
+  type: "urban_flooding" | "heatwave" | "accident" | "road_blockage" | "infrastructure_failure";
   location: CrisisLocation;
-  timestamp: string;
-  trigger_signal_ids: string[];
-  source: "simulated" | "detected";
+  severity: 1 | 2 | 3 | 4 | 5;
+  confidence: "low" | "medium" | "high";
+  confidence_score: number;
+  reasoning: string;
+  contributing_signals: string[];
+  status: "detected" | "analyzed" | "dispatched" | "simulated" | "resolved";
+  detected_at: string;
 }
 
 // Schema C — Operational Picture
 export interface RoadClosure {
-  closure_id: string;
-  location: {
-    latitude: number;
-    longitude: number;
-  };
-  severity: "low" | "medium" | "high";
-  estimated_duration_minutes: number;
+  road: string;
+  status: "blocked" | "partial" | "clear";
+  lat: number;
+  lng: number;
+  source: "traffic_api" | "osm" | "simulated";
 }
 
 export interface NearbyFacility {
-  facility_id: string;
+  type: "rescue_unit" | "hospital" | "fire_station" | "depot";
   name: string;
-  type: "hospital" | "rescue_station" | "police" | "fire" | "distribution_center";
-  location: {
-    latitude: number;
-    longitude: number;
-  };
+  lat: number;
+  lng: number;
   distance_km: number;
-  capacity?: number;
-  availability_score?: number;
+  status: "available" | "deployed" | "unavailable" | "operational" | "unknown";
 }
 
 export interface OperationalPicture {
   crisis_id: string;
-  timestamp: string;
-  affected_population_estimate: number;
-  road_closures: RoadClosure[];
-  nearby_facilities: NearbyFacility[];
-  traffic_state: {
-    blockage_location?: {
-      latitude: number;
-      longitude: number;
-    };
-    congestion_level: number;
+  operational_picture: {
+    affected_zone: { center: [number, number]; radius_km: number };
+    road_closures: RoadClosure[];
+    nearby_facilities: NearbyFacility[];
+    data_gaps: unknown[];
+    population_at_risk: number;
   };
-  source: "simulated" | "live";
+  generated_at: string;
 }
 
 // Schema D — Dispatch Plan
 export interface DispatchOrder {
   order_id: string;
-  unit_id: string;
-  unit_type: string;
-  destination: {
-    latitude: number;
-    longitude: number;
-  };
-  destination_name: string;
-  eta_minutes: number;
-  resource_allocation: Record<string, number>;
-  priority: number;
+  unit: string;
+  unit_type: "water_rescue" | "ambulance" | "fire" | "police" | "supplies";
+  destination: string;
+  destination_lat: number;
+  destination_lng: number;
+  origin_lat: number;
+  origin_lng: number;
   reason: string;
-  status: "pending" | "en_route" | "arrived" | "complete";
+  eta_minutes: number;
 }
 
 export interface ResourceGap {
-  resource_type: string;
+  item: string;
   required: number;
   available: number;
   gap: number;
+  mitigation: string;
 }
 
 export interface DispatchPlan {
   crisis_id: string;
   dispatch_plan: {
+    priority_ranking: Array<{ zone: string; priority_score: number; reason: string }>;
     dispatch_orders: DispatchOrder[];
     resource_gaps: ResourceGap[];
-    total_units_deployed: number;
-    estimated_outcome_confidence: number;
   };
-  source: "simulated" | "planned";
+  generated_at: string;
 }
 
 // Schema E — Simulation Result
 export interface RouteResult {
-  unit_id: string;
-  destination: string;
+  order_id: string;
+  unit: string;
   route: {
-    waypoints: Array<{
-      latitude: number;
-      longitude: number;
-    }>;
+    via: string;
+    waypoints: [number, number][];
     distance_km: number;
-    duration_minutes: number;
+    duration_min: number;
   };
-  eta: string;
+  route_reasoning: string;
 }
 
 export interface SimulationResult {
   crisis_id: string;
-  timestamp: string;
   simulation: {
     routes: RouteResult[];
     traffic_state: {
-      blockage_location: {
-        latitude: number;
-        longitude: number;
-      };
+      before: Record<string, string>;
+      after: Record<string, string>;
       congestion_reduction_pct: number;
     };
     emergency_ticket: {
       ticket_id: string;
-      status: "issued" | "acknowledged" | "in_progress" | "resolved";
+      created_at: string;
+      status: string;
+      units: string[];
     };
+    public_alerts: Array<{
+      channel: "SMS" | "app_push" | "dashboard";
+      target_area: string;
+      message: string;
+    }>;
   };
-  source: "simulated";
+  created_at: string;
 }
 
 // Schema F — Dashboard State
 export interface AgentTraceSummary {
-  agent_id: string;
-  agent_name: string;
-  stage: string;
-  status: "idle" | "running" | "success" | "error";
-  trace_lines: string[];
+  agent: string;
+  key_decision: string;
+  timestamp: string;
 }
 
 export interface DashboardState {
   crisis_id: string;
-  stage: string;
+  stage: "detected" | "analyzed" | "dispatched" | "simulated" | "resolved";
   crisis: CrisisEvent;
-  operational_picture: OperationalPicture;
-  dispatch_plan: DispatchPlan;
-  simulation: SimulationResult;
+  operational_picture: OperationalPicture | null;
+  dispatch_plan: DispatchPlan | null;
+  simulation: SimulationResult | null;
   sitrep_text: string;
   agent_trace_summary: AgentTraceSummary[];
   last_updated: string;
 }
 
-// Mobile App — UI-specific types
+// Active crisis list item — matches /api/crisis/active response shape
 export interface CrisisAlert {
   crisis_id: string;
   type: string;
+  location_name: string;
   severity: number;
-  location: CrisisLocation;
-  affected_population: number;
-  timestamp: string;
+  stage: string;
+  detected_at: string;
 }
 
 export interface SafeRoute {
@@ -180,24 +176,18 @@ export interface SafeRoute {
   distance_km: number;
   eta_minutes: number;
   risk_level: "low" | "medium" | "high";
-  waypoints: Array<{
-    latitude: number;
-    longitude: number;
-  }>;
+  waypoints: Array<{ lat: number; lng: number }>;
 }
-
-export type BottomTab = "home" | "alerts" | "routes" | "profile";
 
 export interface UserProfile {
   user_id: string;
   name: string;
-  location?: {
-    latitude: number;
-    longitude: number;
-  };
+  location?: { lat: number; lng: number };
   alert_preferences: {
     severity_threshold: number;
     push_enabled: boolean;
     sms_enabled: boolean;
   };
 }
+
+export type BottomTab = "home" | "alerts" | "routes" | "profile";
