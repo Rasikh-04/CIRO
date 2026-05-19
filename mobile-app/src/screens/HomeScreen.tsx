@@ -338,7 +338,7 @@ export default function HomeScreen({ navigation }: HomeScreenProps): React.JSX.E
             <React.Fragment key={crisis.id}>
               <Circle
                 center={{ latitude: crisis.location.lat, longitude: crisis.location.lng }}
-                radius={crisis.affected_radius_km * 1000}
+                radius={Math.max(100, (crisis.affected_radius_km || 2.5) * 1000)}
                 fillColor={color + '55'}
                 strokeColor={color + '99'}
                 strokeWidth={2}
