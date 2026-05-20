@@ -89,7 +89,6 @@ function DispatchStatusPill({ status, colors }: { status: string; colors: ColorP
   );
 }
 
-// Layout-only styles for pills — no colors
 const pillLayout = StyleSheet.create({
   statusPill: {
     flexDirection: 'row',
@@ -179,7 +178,7 @@ export default function CrisisDetailScreen({ route, navigation }: CrisisDetailSc
     simTicketId: { fontSize: 13, fontWeight: '500', color: colors.accentSecondary },
     simMetrics: { flexDirection: 'row', alignItems: 'center', gap: 12, marginTop: 4 },
     simMetricItem: { alignItems: 'center', gap: 2 },
-    simMetricValue: { fontSize: 24, fontWeight: '700', color: colors.textPrimary, lineHeight: 28 },
+    simMetricValue: { fontSize: 18, fontWeight: '700', color: colors.textPrimary, lineHeight: 24 },
     simMetricLabel: { fontSize: 11, fontWeight: '400', color: colors.textSecondary },
     simArrow: { marginHorizontal: 4 },
     simReductionPill: {
@@ -263,9 +262,29 @@ export default function CrisisDetailScreen({ route, navigation }: CrisisDetailSc
     );
   }
 
-  const { crisis, dispatch_orders, simulation, public_alerts } = detail;
-  const severityColor = getSeverityColor(crisis.severity);
+  // ── Map backend response to screen fields ──────────────────────────────────
+  const crisis = detail?.crisis ?? detail;
+  const crisisLocation = crisis?.location ?? {};
+  const lat = crisisLocation?.lat ?? 33.6844;
+  const lng = crisisLocation?.lng ?? 73.0479;
+  const affectedRadius = Math.max(100, (crisisLocation?.affected_radius_km ?? 2.5) * 1000);
+  const crisisStatus = crisis?.status ?? detail?.stage ?? 'detected';
+  const crisisType = crisis?.type ?? 'unknown';
+  const detectedAt = crisis?.detected_at ?? '';
+  const locationName = crisisLocation?.primary ?? crisis?.location_name ?? 'Unknown location';
+  const severity = crisis?.severity ?? 3;
+
+  const dispatch_orders = detail?.dispatch_plan?.dispatch_plan?.dispatch_orders ?? [];
+  const simData = detail?.simulation?.simulation ?? {};
+  const public_alerts = simData?.public_alerts ?? [];
+  const emergencyTicket = simData?.emergency_ticket ?? {};
+  const trafficState = simData?.traffic_state ?? {};
+  const congestionReduction = trafficState?.congestion_reduction_pct ?? 0;
+  const trafficBefore = Object.keys(trafficState?.before ?? {}).join(', ') || 'N/A';
+  const trafficAfter = Object.keys(trafficState?.after ?? {}).join(', ') || 'N/A';
+
   const alert = public_alerts[0] ?? null;
+  const severityColor = getSeverityColor(severity);
 
   return (
     <View style={styles.root}>
@@ -297,17 +316,17 @@ export default function CrisisDetailScreen({ route, navigation }: CrisisDetailSc
           <View style={styles.headerTopRow}>
             <View style={[styles.typePill, { borderColor: severityColor }]}>
               <Text style={[styles.typePillText, { color: severityColor }]}>
-                {formatCrisisType(crisis.type)}
+                {formatCrisisType(crisisType)}
               </Text>
             </View>
-            <SeverityBadge severity={crisis.severity} size="md" />
+            <SeverityBadge severity={severity} size="md" />
           </View>
 
-          <Text style={styles.locationName}>{crisis.location_name}</Text>
+          <Text style={styles.locationName}>{locationName}</Text>
 
           <View style={styles.headerMetaRow}>
-            <StatusPill status={crisis.status} colors={colors} />
-            <Text style={styles.detectedAtText}>{formatDateTime(crisis.detected_at)}</Text>
+            <StatusPill status={crisisStatus} colors={colors} />
+            {detectedAt ? <Text style={styles.detectedAtText}>{formatDateTime(detectedAt)}</Text> : null}
           </View>
         </View>
 
@@ -316,8 +335,8 @@ export default function CrisisDetailScreen({ route, navigation }: CrisisDetailSc
           <MapView
             style={styles.map}
             initialRegion={{
-              latitude: crisis.location.lat,
-              longitude: crisis.location.lng,
+              latitude: lat,
+              longitude: lng,
               latitudeDelta: 0.05,
               longitudeDelta: 0.05,
             }}
@@ -328,8 +347,8 @@ export default function CrisisDetailScreen({ route, navigation }: CrisisDetailSc
             mapType="standard"
           >
             <Circle
-              center={{ latitude: crisis.location.lat, longitude: crisis.location.lng }}
-              radius={crisis.affected_radius_km * 1000}
+              center={{ latitude: lat, longitude: lng }}
+              radius={affectedRadius}
               fillColor={severityColor + '33'}
               strokeColor={severityColor + '99'}
               strokeWidth={2}
@@ -341,20 +360,20 @@ export default function CrisisDetailScreen({ route, navigation }: CrisisDetailSc
         {dispatch_orders.length > 0 && (
           <View style={styles.card}>
             <SectionLabel label="DISPATCH ORDERS" colors={colors} />
-            {dispatch_orders.map((order, idx) => (
+            {dispatch_orders.map((order: any, idx: number) => (
               <View
-                key={order.id}
+                key={order.order_id ?? idx}
                 style={[
                   styles.dispatchRow,
                   idx < dispatch_orders.length - 1 && styles.dispatchRowBorder,
                 ]}
               >
                 <View style={styles.dispatchInfo}>
-                  <Text style={styles.dispatchUnit}>{order.unit_name}</Text>
-                  <Text style={styles.dispatchDestination}>→ {order.destination_name}</Text>
+                  <Text style={styles.dispatchUnit}>{order.unit ?? order.unit_name}</Text>
+                  <Text style={styles.dispatchDestination}>→ {order.destination ?? order.destination_name}</Text>
                 </View>
                 <View style={styles.dispatchRight}>
-                  <DispatchStatusPill status={order.status} colors={colors} />
+                  <DispatchStatusPill status={order.status ?? 'pending'} colors={colors} />
                   <Text style={styles.etaText}>{order.eta_minutes} min</Text>
                 </View>
               </View>
@@ -363,20 +382,20 @@ export default function CrisisDetailScreen({ route, navigation }: CrisisDetailSc
         )}
 
         {/* ─── Section 4: Simulation results ───────────────────────────── */}
-        {simulation && (
+        {congestionReduction > 0 && (
           <View style={styles.card}>
             <SectionLabel label="SIMULATION RESULTS" colors={colors} />
 
-            <View style={styles.simTicketRow}>
-              <Feather name="activity" size={14} color={colors.accentSecondary} />
-              <Text style={styles.simTicketId}>Ticket {simulation.emergency_ticket_id}</Text>
-            </View>
+            {emergencyTicket?.ticket_id && (
+              <View style={styles.simTicketRow}>
+                <Feather name="activity" size={14} color={colors.accentSecondary} />
+                <Text style={styles.simTicketId}>Ticket {emergencyTicket.ticket_id}</Text>
+              </View>
+            )}
 
             <View style={styles.simMetrics}>
               <View style={styles.simMetricItem}>
-                <Text style={styles.simMetricValue}>
-                  {simulation.traffic_before.congestion_index}
-                </Text>
+                <Text style={styles.simMetricValue}>{trafficBefore}</Text>
                 <Text style={styles.simMetricLabel}>Before</Text>
               </View>
 
@@ -385,16 +404,12 @@ export default function CrisisDetailScreen({ route, navigation }: CrisisDetailSc
               </View>
 
               <View style={styles.simMetricItem}>
-                <Text style={styles.simMetricValue}>
-                  {simulation.traffic_after.congestion_index}
-                </Text>
+                <Text style={styles.simMetricValue}>{trafficAfter}</Text>
                 <Text style={styles.simMetricLabel}>After</Text>
               </View>
 
               <View style={styles.simReductionPill}>
-                <Text style={styles.simReductionText}>
-                  ↓ {simulation.congestion_reduction_pct}%
-                </Text>
+                <Text style={styles.simReductionText}>↓ {congestionReduction}%</Text>
                 <Text style={styles.simReductionSub}>congestion</Text>
               </View>
             </View>
@@ -405,12 +420,7 @@ export default function CrisisDetailScreen({ route, navigation }: CrisisDetailSc
         {alert && (
           <View style={[styles.card, styles.alertCard]}>
             <SectionLabel label="PUBLIC GUIDANCE" colors={colors} />
-            <BilingualText
-              english={alert.text_english}
-              urdu={alert.text_urdu}
-              showUrdu
-              englishStyle={styles.alertEnglishText}
-            />
+            <Text style={styles.alertEnglishText}>{alert.message ?? alert.text_english}</Text>
           </View>
         )}
 

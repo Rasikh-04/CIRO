@@ -7,7 +7,7 @@ import type {
 } from '../types';
 
 const BACKEND_URL =
-  process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+  process.env.EXPO_PUBLIC_BACKEND_URL || 'http://192.168.100.4:8000';
 
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BACKEND_URL}${path}`, {
@@ -29,8 +29,8 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 
 export async function fetchActiveCrises(): Promise<CrisisEvent[]> {
   try {
-    const data = await get<CrisisEvent[]>('/api/v2/crisis/active');
-    return Array.isArray(data) ? data : [];
+    const data = await get<CrisisEvent[]>('/api/crisis/active');
+    return Array.isArray(data) ? data.map((c: any) => ({ ...c, id: c.crisis_id || c.id })) : [];
   } catch {
     return [];
   }
@@ -38,7 +38,7 @@ export async function fetchActiveCrises(): Promise<CrisisEvent[]> {
 
 export async function fetchCrisisDetail(id: string): Promise<CrisisDetail | null> {
   try {
-    return await get<CrisisDetail>(`/api/v2/crisis/${id}`);
+    return await get<CrisisDetail>(`/api/crisis/full/${id}`);
   } catch {
     return null;
   }
@@ -47,7 +47,7 @@ export async function fetchCrisisDetail(id: string): Promise<CrisisDetail | null
 export async function fetchSafeRoutes(crisisId: string): Promise<SafeRoute[]> {
   try {
     const data = await get<{ routes: SafeRoute[] }>(
-      `/api/v2/mobile/routes/${crisisId}`
+      `/api/crisis/full/${crisisId}`
     );
     return data.routes ?? [];
   } catch {
@@ -62,33 +62,28 @@ export async function fetchNearbyAlerts(
 ): Promise<PublicAlert[]> {
   try {
     const data = await get<PublicAlert[]>(
-      `/api/v2/mobile/alerts?lat=${lat}&lng=${lng}&radius=${radiusKm}`
+      `/api/crisis/active`
     );
-    return Array.isArray(data) ? data : [];
+    return Array.isArray(data) ? data.map((c: any) => ({ ...c, id: c.crisis_id || c.id })) : [];
   } catch {
     return [];
   }
 }
 
 export async function fetchVoiceAlertUrl(crisisId: string): Promise<string | null> {
-  try {
-    const data = await get<{ url: string }>(`/api/v2/mobile/crisis/${crisisId}/audio`);
-    return data.url ?? null;
-  } catch {
-    return null;
-  }
+  return null;
 }
 
 export async function submitCitizenReport(
   report: CitizenReport
 ): Promise<{ report_id: string; status: string } | null> {
   try {
-    return await post('/api/v2/reports', report);
+    return await post('/api/crisis/detected', report);
   } catch {
     return null;
   }
 }
 
 export async function triggerDemo(): Promise<void> {
-  await post('/api/v2/debug/inject-scenario', { scenario: 'g10_flood' });
+  await post('/api/crisis/detected', { scenario: 'g10_flood' });
 }
