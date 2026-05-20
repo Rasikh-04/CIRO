@@ -1,15 +1,33 @@
-import axios from "axios";
-import { DashboardState, CrisisAlert, SafeRoute } from "../types";
+import type {
+  CrisisEvent,
+  CrisisDetail,
+  SafeRoute,
+  CitizenReport,
+  PublicAlert,
+} from '../types';
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL || "http://localhost:8000";
+const BACKEND_URL =
+  process.env.EXPO_PUBLIC_BACKEND_URL || 'http://192.168.100.4:8000';
 
-const api = axios.create({
-  baseURL: BACKEND_URL,
-  timeout: 10000,
-});
+async function get<T>(path: string): Promise<T> {
+  const res = await fetch(`${BACKEND_URL}${path}`, {
+    headers: { 'Content-Type': 'application/json' },
+  });
+  if (!res.ok) throw new Error(`GET ${path} → ${res.status}`);
+  return res.json() as Promise<T>;
+}
 
-// Fetch active crises
-export async function fetchActiveCrises(): Promise<CrisisAlert[]> {
+async function post<T>(path: string, body: unknown): Promise<T> {
+  const res = await fetch(`${BACKEND_URL}${path}`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  if (!res.ok) throw new Error(`POST ${path} → ${res.status}`);
+  return res.json() as Promise<T>;
+}
+
+export async function fetchActiveCrises(): Promise<CrisisEvent[]> {
   try {
     const res = await api.get("/api/crisis/active");
     return Array.isArray(res.data) ? res.data : [];
@@ -19,8 +37,7 @@ export async function fetchActiveCrises(): Promise<CrisisAlert[]> {
   }
 }
 
-// Fetch full crisis state by ID
-export async function fetchCrisisDetail(crisisId: string): Promise<DashboardState | null> {
+export async function fetchCrisisDetail(id: string): Promise<CrisisDetail | null> {
   try {
     const res = await api.get(`/api/crisis/full/${crisisId}`);
     return res.data;
@@ -30,30 +47,46 @@ export async function fetchCrisisDetail(crisisId: string): Promise<DashboardStat
   }
 }
 
-// Fetch safe routes for a crisis
 export async function fetchSafeRoutes(crisisId: string): Promise<SafeRoute[]> {
   try {
-    const res = await api.get(`/api/crisis/${crisisId}/safe-routes`);
-    return res.data.routes || [];
-  } catch (err) {
-    console.error(`Failed to fetch safe routes for ${crisisId}:`, err);
+    const data = await get<{ routes: SafeRoute[] }>(
+      `/api/crisis/full/${crisisId}`
+    );
+    return data.routes ?? [];
+  } catch {
     return [];
   }
 }
 
-// Log user intent (safe route taken, alert dismissed, etc.)
-export async function logUserIntent(crisisId: string, intentType: string, data: Record<string, unknown>): Promise<boolean> {
+export async function fetchNearbyAlerts(
+  lat: number,
+  lng: number,
+  radiusKm = 10
+): Promise<PublicAlert[]> {
   try {
-    await api.post(`/api/crisis/${crisisId}/user-intent`, {
-      intent_type: intentType,
-      timestamp: new Date().toISOString(),
-      ...data,
-    });
-    return true;
-  } catch (err) {
-    console.error("Failed to log user intent:", err);
-    return false;
+    const data = await get<PublicAlert[]>(
+      `/api/crisis/active`
+    );
+    return Array.isArray(data) ? data.map((c: any) => ({ ...c, id: c.crisis_id || c.id })) : [];
+  } catch {
+    return [];
   }
 }
 
-export default api;
+export async function fetchVoiceAlertUrl(crisisId: string): Promise<string | null> {
+  return null;
+}
+
+export async function submitCitizenReport(
+  report: CitizenReport
+): Promise<{ report_id: string; status: string } | null> {
+  try {
+    return await post('/api/crisis/detected', report);
+  } catch {
+    return null;
+  }
+}
+
+export async function triggerDemo(): Promise<void> {
+  await post('/api/crisis/detected', { scenario: 'g10_flood' });
+}

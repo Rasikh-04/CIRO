@@ -7,6 +7,13 @@ load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 
+if not DATABASE_URL:
+    raise RuntimeError(
+        "DATABASE_URL environment variable not set. "
+        "Set it in Cloud Run: "
+        "gcloud run services update ciro-backend --set-env-vars DATABASE_URL=postgresql://..."
+    )
+
 engine = create_engine(DATABASE_URL)
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()

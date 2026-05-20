@@ -6,6 +6,8 @@ interface Props {
   selectedId: string | null;
   onSelect: (id: string) => void;
   onTriggerDemo: () => void;
+  triggerStatus: "idle" | "loading" | "ok" | "error";
+  triggerError: string | null;
 }
 
 const STAGE_LABELS: Record<CrisisStage, string> = {
@@ -39,7 +41,19 @@ function timeAgo(iso: string): string {
   return `${Math.floor(diff / 3600)}h ago`;
 }
 
-export default function CrisisPanel({ crises, selectedId, onSelect, onTriggerDemo }: Props) {
+export default function CrisisPanel({ crises, selectedId, onSelect, onTriggerDemo, triggerStatus, triggerError }: Props) {
+  const buttonLabel =
+    triggerStatus === "loading" ? "Triggering…" :
+    triggerStatus === "ok"      ? "✓ Triggered" :
+    triggerStatus === "error"   ? "✗ Failed" :
+    "▶ Trigger Demo";
+
+  const buttonClass =
+    triggerStatus === "loading" ? "bg-warning cursor-not-allowed opacity-70" :
+    triggerStatus === "ok"      ? "bg-safe" :
+    triggerStatus === "error"   ? "bg-critical" :
+    "bg-critical hover:bg-red-700";
+
   return (
     <aside className="w-64 min-w-[16rem] bg-surface border-r border-border flex flex-col h-full">
       <div className="p-3 border-b border-border flex items-center justify-between">
@@ -88,13 +102,19 @@ export default function CrisisPanel({ crises, selectedId, onSelect, onTriggerDem
       <div className="p-3 border-t border-border">
         <button
           onClick={onTriggerDemo}
-          className="w-full py-2 px-3 bg-critical hover:bg-red-700 text-white text-sm font-semibold rounded transition-colors"
+          disabled={triggerStatus === "loading"}
+          className={`w-full py-2 px-3 text-white text-sm font-semibold rounded transition-colors ${buttonClass}`}
         >
-          ▶ Trigger Demo
+          {buttonLabel}
         </button>
-        <p className="text-text-secondary text-xs text-center mt-1.5">
-          Runs G-10 flood scenario
-        </p>
+        {triggerStatus === "error" && triggerError && (
+          <p className="text-critical text-xs text-center mt-1.5 break-all">{triggerError}</p>
+        )}
+        {triggerStatus !== "error" && (
+          <p className="text-text-secondary text-xs text-center mt-1.5">
+            Runs G-10 flood scenario
+          </p>
+        )}
       </div>
     </aside>
   );

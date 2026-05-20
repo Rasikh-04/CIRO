@@ -24,8 +24,13 @@ web-dashboard/build/
 mobile-app/.expo/
 mobile-app/dist/
 
+# Android local config
+mobile-app/android/local.properties
+
 # Agent outputs (runtime artifacts — not committed)
 agents/*/output/
+backend/agents/*/output/
+backend/agents/agent_3_situational_awareness/
 
 # OS
 .DS_Store

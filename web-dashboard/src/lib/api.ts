@@ -6,8 +6,8 @@ const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
 const client = axios.create({ baseURL: BASE_URL, timeout: 10000 });
 
 export async function fetchActiveCrises(): Promise<ActiveCrisisSummary[]> {
-  const { data } = await client.get("/api/crisis/active");
-  return data;
+  const { data } = await client.get("/api/v2/crisis/active");
+  return Array.isArray(data) ? data : [];
 }
 
 export async function fetchCrisis(id: string): Promise<DashboardState> {
@@ -16,7 +16,7 @@ export async function fetchCrisis(id: string): Promise<DashboardState> {
 }
 
 export async function fetchFullCrisis(id: string): Promise<DashboardState> {
-  const { data } = await client.get(`/api/crisis/full/${id}`);
+  const { data } = await client.get(`/api/v2/crisis/${id}`);
   return data;
 }
 

@@ -1,4 +1,5 @@
 import React from "react";
+import ReactMarkdown from "react-markdown";
 import type { DashboardState, BottomTab, AgentTraceSummary } from "../types";
 
 interface Props {
@@ -122,8 +123,15 @@ function SitrepTab({ sitrep }: { sitrep: string }) {
     return <div className="text-text-secondary text-sm p-4">SITREP will appear here after Agent 6 completes.</div>;
   }
   return (
-    <div className="p-4 text-xs font-mono whitespace-pre-wrap text-text-primary leading-relaxed">
-      {sitrep}
+    <div className="p-4 text-xs text-text-primary leading-relaxed prose prose-invert prose-xs max-w-none
+      [&_h1]:text-sm [&_h1]:font-bold [&_h1]:text-text-primary [&_h1]:mb-2 [&_h1]:mt-3
+      [&_h2]:text-xs [&_h2]:font-bold [&_h2]:text-info [&_h2]:mb-1 [&_h2]:mt-2 [&_h2]:uppercase [&_h2]:tracking-wider
+      [&_p]:mb-2 [&_p]:text-text-primary
+      [&_ul]:pl-4 [&_ul]:mb-2 [&_li]:mb-0.5 [&_li]:text-text-secondary
+      [&_strong]:text-text-primary [&_strong]:font-semibold
+      [&_hr]:border-border [&_hr]:my-3
+      [&_code]:text-warning [&_code]:bg-bg [&_code]:px-1 [&_code]:rounded">
+      <ReactMarkdown>{sitrep}</ReactMarkdown>
     </div>
   );
 }

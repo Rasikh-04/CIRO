@@ -15,7 +15,7 @@
       "supportsTabletMode": true,
       "bundleIdentifier": "com.aiseekho.ciro",
       "config": {
-        "googleMapsApiKey": "REPLACE_WITH_YOUR_AIZA_KEY"
+        "googleMapsApiKey": "AIzaSyDLQ31I9t3chOAMuKEOUOFBjcaQc19nbKs"
       }
     },
     "android": {
@@ -27,17 +27,12 @@
       "permissions": ["android.permission.ACCESS_FINE_LOCATION", "android.permission.ACCESS_COARSE_LOCATION"],
       "config": {
         "googleMaps": {
-          "apiKey": "REPLACE_WITH_YOUR_AIZA_KEY"
+          "apiKey": "AIzaSyDLQ31I9t3chOAMuKEOUOFBjcaQc19nbKs"
         }
       }
     },
     "web": {
-      "bundler": "metro",
-      "build": {
-        "babel": {
-          "include": ["expo-router/babel"]
-        }
-      }
+      "bundler": "metro"
     },
     "plugins": [
       [

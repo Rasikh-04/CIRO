@@ -30,6 +30,26 @@ export interface CrisisLocation {
 }
 
 export interface CrisisEvent {
+  id: string;
+  type: CrisisType;
+  location: { lat: number; lng: number };
+  location_name: string;
+  affected_radius_km: number;
+  severity: 1 | 2 | 3 | 4 | 5;
+  confidence_score: number;
+  confidence_label: ConfidenceLabel;
+  reasoning?: string;
+  status: CrisisStatus;
+  track: 1 | 2;
+  track2_activated: boolean;
+  detected_at: string;
+  updated_at: string;
+  resolved_at?: string;
+  alert_audio_url?: string;
+}
+
+export interface DispatchOrder {
+  id: string;
   crisis_id: string;
   type: "urban_flooding" | "heatwave" | "accident" | "road_blockage" | "infrastructure_failure";
   location: CrisisLocation;
@@ -42,7 +62,6 @@ export interface CrisisEvent {
   detected_at: string;
 }
 
-// Schema C — Operational Picture
 export interface RoadClosure {
   road: string;
   status: "blocked" | "partial" | "clear";
@@ -104,7 +123,6 @@ export interface DispatchPlan {
   generated_at: string;
 }
 
-// Schema E — Simulation Result
 export interface RouteResult {
   order_id: string;
   unit: string;
@@ -148,7 +166,8 @@ export interface AgentTraceSummary {
   timestamp: string;
 }
 
-export interface DashboardState {
+export interface PublicAlert {
+  id: string;
   crisis_id: string;
   stage: "detected" | "analyzed" | "dispatched" | "simulated" | "resolved";
   crisis: CrisisEvent;

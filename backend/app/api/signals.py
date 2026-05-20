@@ -40,5 +40,25 @@ def ingest_signals(payload: SignalIngestRequest, db: Session = Depends(get_db)):
 
 @router.get("/signals/latest")
 def get_latest_signals(db: Session = Depends(get_db)):
+    from geoalchemy2.shape import to_shape
     signals = db.query(Signal).order_by(Signal.timestamp.desc()).limit(20).all()
-    return signals
+    result = []
+    for s in signals:
+        shape = to_shape(s.location) if s.location else None
+        result.append({
+            "id":          s.id,
+            "source":      s.source,
+            "raw_text":    s.raw_text,
+            "normalized":  s.normalized,
+            "signal_type": s.signal_type,
+            "confidence":  s.confidence,
+            "timestamp":   s.timestamp.isoformat() if s.timestamp else "",
+            "crisis_id":   s.crisis_id,
+            "location": {
+                "lat":      shape.y if shape else 33.6844,
+                "lng":      shape.x if shape else 73.0479,
+                "district": s.district or "",
+                "city":     s.city or "",
+            }
+        })
+    return result
