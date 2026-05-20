@@ -29,7 +29,7 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 
 export async function fetchActiveCrises(): Promise<CrisisEvent[]> {
   try {
-    const data = await get<CrisisEvent[]>('/api/crisis/active');
+    const data = await get<CrisisEvent[]>('/api/v2/crisis/active');
     return Array.isArray(data) ? data.map((c: any) => ({ ...c, id: c.crisis_id || c.id })) : [];
   } catch {
     return [];
@@ -38,7 +38,7 @@ export async function fetchActiveCrises(): Promise<CrisisEvent[]> {
 
 export async function fetchCrisisDetail(id: string): Promise<CrisisDetail | null> {
   try {
-    return await get<CrisisDetail>(`/api/crisis/full/${id}`);
+    return await get<CrisisDetail>(`/api/v2/crisis/full/${id}`);
   } catch {
     return null;
   }
@@ -46,10 +46,17 @@ export async function fetchCrisisDetail(id: string): Promise<CrisisDetail | null
 
 export async function fetchSafeRoutes(crisisId: string): Promise<SafeRoute[]> {
   try {
-    const data = await get<{ routes: SafeRoute[] }>(
-      `/api/crisis/full/${crisisId}`
-    );
-    return data.routes ?? [];
+    const data = await get<any>(`/api/v2/crisis/full/${crisisId}`);
+    const routes: any[] = data?.simulation?.simulation?.routes ?? [];
+    return routes.map((r: any) => ({
+      name: r.unit ?? 'Unit',
+      via: r.route?.via ?? '',
+      distance_km: r.route?.distance_km ?? 0,
+      eta_minutes: r.route?.duration_min ?? 0,
+      extra_minutes: 0,
+      risk_level: 'monitor' as SafeRoute['risk_level'],
+      waypoints: (r.route?.waypoints ?? []).map(([lat, lng]: [number, number]) => ({ lat, lng })),
+    }));
   } catch {
     return [];
   }
@@ -61,9 +68,7 @@ export async function fetchNearbyAlerts(
   radiusKm = 10
 ): Promise<PublicAlert[]> {
   try {
-    const data = await get<PublicAlert[]>(
-      `/api/crisis/active`
-    );
+    const data = await get<PublicAlert[]>('/api/v2/crisis/active');
     return Array.isArray(data) ? data.map((c: any) => ({ ...c, id: c.crisis_id || c.id })) : [];
   } catch {
     return [];
@@ -85,5 +90,5 @@ export async function submitCitizenReport(
 }
 
 export async function triggerDemo(): Promise<void> {
-  await post('/api/crisis/detected', { scenario: 'g10_flood' });
+  await post('/api/v2/debug/inject-scenario', { scenario: 'g10_flood' });
 }

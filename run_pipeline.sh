@@ -17,7 +17,7 @@ set -e
 PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
 BACKEND_DIR="$PROJECT_ROOT/backend"
 AGENTS_DIR="$PROJECT_ROOT/agents"
-PYTHON="$BACKEND_DIR/.venv/bin/python"
+PYTHON="$BACKEND_DIR/venv/bin/python"
 CRISIS_ID="CRS_20260513_001"
 
 export CIRO_BACKEND_URL="http://localhost:8000"
@@ -121,13 +121,13 @@ should_run() { [[ " ${RUN_AGENTS[*]} " == *" $1 "* ]]; }
 # ── Preflight ─────────────────────────────────────────────────────────────────
 step "Preflight"
 
-[ -f "$PYTHON" ] || die "Backend venv not found — run: cd backend && python -m venv .venv && pip install -r requirements.txt"
+[ -f "$PYTHON" ] || die "Backend venv not found — run: cd backend && python -m venv venv && pip install -r requirements.txt"
 curl -sf http://localhost:8000/ > /dev/null 2>&1 || die "Backend not running at localhost:8000 — start it first"
 ok "Backend reachable"
 
 "$PYTHON" -c "import requests" 2>/dev/null || {
     warn "requests not in venv — installing..."
-    "$BACKEND_DIR/.venv/bin/pip" install requests -q
+    "$BACKEND_DIR/venv/bin/pip" install requests -q
     ok "requests installed"
 }
 

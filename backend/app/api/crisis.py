@@ -14,6 +14,8 @@ from datetime import datetime, timezone
 
 # In-memory cache for complete dashboard states posted by Agent 6
 _dashboard_snapshots: dict = {}
+# In-memory cache for resource_gaps from dispatch payloads
+_resource_gaps_cache: dict = {}
 
 router = APIRouter()
 
@@ -105,6 +107,9 @@ async def crisis_dispatch(payload: dict, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Crisis not found")
     if "dispatched" not in VALID_TRANSITIONS.get(crisis.status, []):
         raise HTTPException(status_code=400, detail=f"Cannot transition from '{crisis.status}' to 'dispatched'")
+    resource_gaps = payload.get("dispatch_plan", {}).get("resource_gaps", [])
+    if resource_gaps:
+        _resource_gaps_cache[crisis_id] = resource_gaps
     for order in payload.get("dispatch_plan", {}).get("dispatch_orders", []):
         dest_geo = None
         if order.get("destination_lat") and order.get("destination_lng"):
@@ -251,8 +256,8 @@ def get_full_crisis(crisis_id: str, db: Session = Depends(get_db)):
                         "unit":            o.unit_name,
                         "unit_type":       o.unit_type,
                         "destination":     o.destination,
-                        "destination_lat": 0,
-                        "destination_lng": 0,
+                        "destination_lat": to_shape(o.destination_geo).y if o.destination_geo else 0,
+                        "destination_lng": to_shape(o.destination_geo).x if o.destination_geo else 0,
                         "origin_lat":      0,
                         "origin_lng":      0,
                         "reason":          o.reason,
@@ -260,9 +265,9 @@ def get_full_crisis(crisis_id: str, db: Session = Depends(get_db)):
                     }
                     for o in orders
                 ],
-                "resource_gaps": [],
+                "resource_gaps": _resource_gaps_cache.get(crisis_id, []),
             },
-            "generated_at": "",
+            "generated_at": orders[0].created_at.isoformat() if orders and orders[0].created_at else "",
         } if orders else {},
         "simulation": {
             "crisis_id": crisis.id,
@@ -290,41 +295,4 @@ def get_full_crisis(crisis_id: str, db: Session = Depends(get_db)):
 
 @router.get("/crisis/{crisis_id}")
 def get_crisis(crisis_id: str, db: Session = Depends(get_db)):
-    if crisis_id in _dashboard_snapshots:
-        return _dashboard_snapshots[crisis_id]
-
-    crisis = db.query(Crisis).filter(Crisis.id == crisis_id).first()
-    if not crisis:
-        raise HTTPException(status_code=404, detail="Not found")
-
-    shape = to_shape(crisis.location) if crisis.location else None
-    lat = shape.y if shape else 33.6844
-    lng = shape.x if shape else 73.0479
-
-    return {
-        "crisis_id": crisis.id,
-        "stage":     crisis.status,
-        "crisis": {
-            "crisis_id":  crisis.id,
-            "type":       crisis.type,
-            "severity":   crisis.severity,
-            "confidence": crisis.confidence_label or "high",
-            "confidence_score": crisis.confidence or 0.89,
-            "reasoning":  crisis.reasoning or "",
-            "contributing_signals": [],
-            "status":     "confirmed",
-            "detected_at": crisis.detected_at.isoformat() if crisis.detected_at else "",
-            "location": {
-                "primary":            crisis.location_name,
-                "lat":                lat,
-                "lng":                lng,
-                "affected_radius_km": crisis.affected_radius or 2.5,
-            },
-        },
-        "operational_picture": {},
-        "dispatch_plan": {},
-        "simulation": {},
-        "sitrep_text": "",
-        "agent_trace_summary": [],
-        "last_updated": crisis.updated_at.isoformat() if crisis.updated_at else "",
-    }
+    return get_full_crisis(crisis_id, db)

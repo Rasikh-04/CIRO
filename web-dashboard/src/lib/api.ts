@@ -16,7 +16,7 @@ export async function fetchCrisis(id: string): Promise<DashboardState> {
 }
 
 export async function fetchFullCrisis(id: string): Promise<DashboardState> {
-  const { data } = await client.get(`/api/v2/crisis/${id}`);
+  const { data } = await client.get(`/api/v2/crisis/full/${id}`);
   return data;
 }
 
