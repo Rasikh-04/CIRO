@@ -1,0 +1,144 @@
+{
+  "id": "g10_flood",
+  "crisis_id": "CRS_20260513_001",
+  "crisis_type": "urban_flooding",
+  "location": {
+    "name": "G-10, Islamabad",
+    "district": "G-10",
+    "lat": 33.6844,
+    "lng": 73.0479,
+    "affected_radius_km": 2.5
+  },
+  "severity": 4,
+  "social_posts": [
+    {
+      "id": "sm_001",
+      "platform": "Twitter/X",
+      "text": "G-10 mein pani bhar gaya hai, gaariyan phans gayi hain #G10 #Islamabad",
+      "timestamp": "2026-05-13T14:30:00Z",
+      "user_location": "Islamabad",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_002",
+      "platform": "Twitter/X",
+      "text": "Flash flood happening at G-10 for past 30 mins, roads completely blocked near the park",
+      "timestamp": "2026-05-13T14:31:00Z",
+      "user_location": "G-10, Islamabad",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_003",
+      "platform": "WhatsApp (forwarded)",
+      "text": "Bhai G-10 sector mein sari galiyaan doob gayi hain, ambulance bhi nahi aa sakti",
+      "timestamp": "2026-05-13T14:32:00Z",
+      "user_location": null,
+      "source": "simulated"
+    },
+    {
+      "id": "sm_004",
+      "platform": "Twitter/X",
+      "text": "Srinagar Highway band ho gaya hai G-10 ke paas, traffic jam har jagah",
+      "timestamp": "2026-05-13T14:33:00Z",
+      "user_location": "Islamabad",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_005",
+      "platform": "Twitter/X",
+      "text": "Cars stranded on main road near G-10 markaz, water level rising fast",
+      "timestamp": "2026-05-13T14:34:00Z",
+      "user_location": "G-10",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_006",
+      "platform": "Facebook",
+      "text": "G-9 mein bhi paani aa gaya, G-10 wali situation zyada kharab lag rahi hai",
+      "timestamp": "2026-05-13T14:35:00Z",
+      "user_location": "G-9, Islamabad",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_007",
+      "platform": "Twitter/X",
+      "text": "When will Islamabad fix its drainage system? This happens every monsoon. G-10 flooded AGAIN",
+      "timestamp": "2026-05-13T14:36:00Z",
+      "user_location": "Islamabad",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_008",
+      "platform": "Twitter/X",
+      "text": "F-8 mein sab theek hai abhi, G-10 waale relatives se contact nahi ho raha",
+      "timestamp": "2026-05-13T14:37:00Z",
+      "user_location": "F-8, Islamabad",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_009",
+      "platform": "Twitter/X",
+      "text": "Just a normal Tuesday in Islamabad lol picnic in G-10",
+      "timestamp": "2026-05-13T14:20:00Z",
+      "user_location": "Islamabad",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_010",
+      "platform": "Twitter/X",
+      "text": "G-10 flooding update: rescue teams reportedly deployed but situation still critical, avoid area",
+      "timestamp": "2026-05-13T14:40:00Z",
+      "user_location": "G-10",
+      "source": "simulated"
+    }
+  ],
+  "traffic": {
+    "source": "simulated",
+    "timestamp": "2026-05-13T14:30:00Z",
+    "traffic_data": [
+      {
+        "road": "Srinagar Highway",
+        "segment": "G-10 interchange to I-10 merge",
+        "lat": 33.6880,
+        "lng": 73.0550,
+        "status": "severe_congestion",
+        "speed_kmh": 4,
+        "normal_speed_kmh": 60,
+        "congestion_level": "severe",
+        "incident_type": "flooding",
+        "source": "simulated"
+      },
+      {
+        "road": "Margalla Road",
+        "segment": "G-10 to F-8 section",
+        "lat": 33.7200,
+        "lng": 73.0450,
+        "status": "clear",
+        "speed_kmh": 55,
+        "normal_speed_kmh": 60,
+        "congestion_level": "none",
+        "incident_type": null,
+        "source": "simulated"
+      },
+      {
+        "road": "Jinnah Avenue",
+        "segment": "G-10 to G-8",
+        "lat": 33.6900,
+        "lng": 73.0400,
+        "status": "moderate_congestion",
+        "speed_kmh": 25,
+        "normal_speed_kmh": 60,
+        "congestion_level": "moderate",
+        "incident_type": "traffic_diversion",
+        "source": "simulated"
+      }
+    ]
+  },
+  "dispatch": {
+    "unit_priority": ["water_rescue", "ambulance"],
+    "destination_name": "G-10 Sector, Islamabad",
+    "blocked_road": "Srinagar Highway",
+    "alternate_road": "Margalla Road",
+    "alternate_waypoint": [33.7200, 73.0450]
+  }
+}

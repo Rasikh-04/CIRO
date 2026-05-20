@@ -1,0 +1,128 @@
+{
+  "id": "f8_heatwave",
+  "crisis_id": "CRS_20260514_002",
+  "crisis_type": "heatwave",
+  "location": {
+    "name": "F-8, Islamabad",
+    "district": "F-8",
+    "lat": 33.7189,
+    "lng": 73.0551,
+    "affected_radius_km": 3.0
+  },
+  "severity": 3,
+  "social_posts": [
+    {
+      "id": "sm_001",
+      "platform": "Twitter/X",
+      "text": "F-8 mein garmi se halat kharab ho rahi hai, 3 log behosh ho gaye markaz ke paas #Islamabad #heatwave",
+      "timestamp": "2026-05-14T12:10:00Z",
+      "user_location": "F-8, Islamabad",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_002",
+      "platform": "Twitter/X",
+      "text": "Extreme heat in F-8 today, multiple people collapsing near the market. Temperature feels like 48C",
+      "timestamp": "2026-05-14T12:12:00Z",
+      "user_location": "F-8 Markaz, Islamabad",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_003",
+      "platform": "WhatsApp (forwarded)",
+      "text": "F-8 markaz mein aaj bohat zyada garmi hai, elderly aur bachon ko bahar na nikalen, heat stroke ka khatra",
+      "timestamp": "2026-05-14T12:15:00Z",
+      "user_location": null,
+      "source": "simulated"
+    },
+    {
+      "id": "sm_004",
+      "platform": "Twitter/X",
+      "text": "Power outage in F-8 since morning, no AC no fans, people sitting outside in 46 degree heat — this is dangerous",
+      "timestamp": "2026-05-14T12:18:00Z",
+      "user_location": "F-8, Islamabad",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_005",
+      "platform": "Facebook",
+      "text": "URGENT: old man collapsed near F-8 chowk, ambulance needed immediately, bystanders trying to help",
+      "timestamp": "2026-05-14T12:20:00Z",
+      "user_location": "F-8 Chowk",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_006",
+      "platform": "Twitter/X",
+      "text": "F-7 and F-8 both affected by this heatwave, water supply also low — CDA needs to open emergency cooling points",
+      "timestamp": "2026-05-14T12:22:00Z",
+      "user_location": "Islamabad",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_007",
+      "platform": "Twitter/X",
+      "text": "lol Islamabad summer is just warm not that serious, people are dramatic",
+      "timestamp": "2026-05-14T11:50:00Z",
+      "user_location": "Islamabad",
+      "source": "simulated"
+    },
+    {
+      "id": "sm_008",
+      "platform": "Twitter/X",
+      "text": "F-8 hospitals are getting overcrowded with heat exhaustion cases, PIMS reporting surge in emergency admissions",
+      "timestamp": "2026-05-14T12:30:00Z",
+      "user_location": "Islamabad",
+      "source": "simulated"
+    }
+  ],
+  "traffic": {
+    "source": "simulated",
+    "timestamp": "2026-05-14T12:10:00Z",
+    "traffic_data": [
+      {
+        "road": "Islamabad Highway",
+        "segment": "F-8 to G-8 interchange",
+        "lat": 33.7100,
+        "lng": 73.0480,
+        "status": "moderate_congestion",
+        "speed_kmh": 20,
+        "normal_speed_kmh": 70,
+        "congestion_level": "moderate",
+        "incident_type": "traffic_diversion",
+        "source": "simulated"
+      },
+      {
+        "road": "Murree Road",
+        "segment": "F-8 to F-6 section",
+        "lat": 33.7300,
+        "lng": 73.0600,
+        "status": "clear",
+        "speed_kmh": 60,
+        "normal_speed_kmh": 60,
+        "congestion_level": "none",
+        "incident_type": null,
+        "source": "simulated"
+      },
+      {
+        "road": "7th Avenue",
+        "segment": "F-8 to Blue Area",
+        "lat": 33.7200,
+        "lng": 73.0520,
+        "status": "moderate_congestion",
+        "speed_kmh": 18,
+        "normal_speed_kmh": 60,
+        "congestion_level": "moderate",
+        "incident_type": "traffic_diversion",
+        "source": "simulated"
+      }
+    ]
+  },
+  "dispatch": {
+    "unit_priority": ["ambulance", "water_rescue"],
+    "destination_name": "F-8 Markaz, Islamabad",
+    "blocked_road": "Islamabad Highway",
+    "alternate_road": "Murree Road",
+    "alternate_waypoint": [33.7300, 73.0600]
+  }
+}

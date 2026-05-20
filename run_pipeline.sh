@@ -2,23 +2,27 @@
 # CIRO Local Pipeline Runner
 #
 # Usage:
-#   ./run_pipeline.sh              — run all 6 agents in sequence
-#   ./run_pipeline.sh --agent 3   — run only Agent 3
-#   ./run_pipeline.sh --from 3    — run Agent 3 through 6
-#   ./run_pipeline.sh --agent 3 --agent 5  — run agents 3 and 5
-#   ./run_pipeline.sh --reset     — wipe all outputs + DB rows, then exit
+#   ./run_pipeline.sh                        — run all 6 agents (default: g10_flood)
+#   ./run_pipeline.sh -s f8_heatwave         — run with a different scenario
+#   ./run_pipeline.sh --agent 3              — run only Agent 3
+#   ./run_pipeline.sh --from 3               — run Agent 3 through 6
+#   ./run_pipeline.sh --agent 3 --agent 5    — run agents 3 and 5
+#   ./run_pipeline.sh --reset                — wipe all outputs + DB rows, then exit
+#
+# Scenarios live in agents/scenarios/*.json
+# Available: g10_flood, f8_heatwave
 #
 # Prerequisites:
 #   - Backend running: cd backend && uvicorn main:app --reload --port 8000
-#   - Run from project root: /home/rasikh/Projects/CIRO/
+#   - Run from project root
 
 set -e
 
 PROJECT_ROOT="$(cd "$(dirname "$0")" && pwd)"
 BACKEND_DIR="$PROJECT_ROOT/backend"
 AGENTS_DIR="$PROJECT_ROOT/agents"
-PYTHON="$BACKEND_DIR/.venv/bin/python"
-CRISIS_ID="CRS_20260513_001"
+PYTHON="$BACKEND_DIR/venv/bin/python"
+SCENARIO="g10_flood"
 
 export CIRO_BACKEND_URL="http://localhost:8000"
 export BACKEND_URL="http://localhost:8000"
@@ -46,14 +50,21 @@ while [[ $# -gt 0 ]]; do
             SELECTED_AGENTS+=("$2"); shift 2 ;;
         --from|-f)
             FROM_AGENT="$2"; shift 2 ;;
+        --scenario|-s)
+            SCENARIO="$2"; shift 2 ;;
         --reset|-r)
             DO_RESET=true; shift ;;
         --help|-h)
-            sed -n '2,11p' "$0"; exit 0 ;;
+            sed -n '2,14p' "$0"; exit 0 ;;
         *)
             die "Unknown flag: $1  (use --help)" ;;
     esac
 done
+
+# Resolve crisis_id from the scenario file
+SCENARIO_FILE="$AGENTS_DIR/scenarios/$SCENARIO.json"
+[ -f "$SCENARIO_FILE" ] || die "Scenario not found: $SCENARIO_FILE"
+CRISIS_ID=$("$PYTHON" -c "import json; print(json.load(open('$SCENARIO_FILE'))['crisis_id'])")
 
 # ── Reset ─────────────────────────────────────────────────────────────────────
 if $DO_RESET; then
@@ -121,23 +132,25 @@ should_run() { [[ " ${RUN_AGENTS[*]} " == *" $1 "* ]]; }
 # ── Preflight ─────────────────────────────────────────────────────────────────
 step "Preflight"
 
-[ -f "$PYTHON" ] || die "Backend venv not found — run: cd backend && python -m venv .venv && pip install -r requirements.txt"
+[ -f "$PYTHON" ] || die "Backend venv not found — run: cd backend && python -m venv venv && pip install -r requirements.txt"
 curl -sf http://localhost:8000/ > /dev/null 2>&1 || die "Backend not running at localhost:8000 — start it first"
 ok "Backend reachable"
 
 "$PYTHON" -c "import requests" 2>/dev/null || {
     warn "requests not in venv — installing..."
-    "$BACKEND_DIR/.venv/bin/pip" install requests -q
+    "$BACKEND_DIR/venv/bin/pip" install requests -q
     ok "requests installed"
 }
 
+echo "  Scenario  : $SCENARIO"
+echo "  Crisis ID : $CRISIS_ID"
 echo "  Running agents: ${RUN_AGENTS[*]}"
 
 # ── Agent 1 ───────────────────────────────────────────────────────────────────
 if should_run 1; then
     step "AGENT 1 — Signal Ingestion"
     cd "$AGENTS_DIR/agent_1_signal_ingestion"
-    "$PYTHON" ingest.py
+    "$PYTHON" ingest.py --scenario "$SCENARIO"
     ok "Agent 1 complete → output/signals.json"
 fi
 
@@ -145,7 +158,7 @@ fi
 if should_run 2; then
     step "AGENT 2 — Crisis Detection"
     cd "$AGENTS_DIR/agent_2_crisis_detection"
-    "$PYTHON" classify.py
+    "$PYTHON" classify.py --scenario "$SCENARIO"
     ok "Agent 2 complete → output/crisis.json"
 fi
 
@@ -165,7 +178,7 @@ fi
 if should_run 4; then
     step "AGENT 4 — Resource Dispatch"
     cd "$BACKEND_DIR/agents/agent_4_resource_dispatch"
-    "$PYTHON" dispatch.py
+    "$PYTHON" dispatch.py --scenario "$SCENARIO"
     ok "Agent 4 complete → output/dispatch.json"
 fi
 
@@ -173,7 +186,7 @@ fi
 if should_run 5; then
     step "AGENT 5 — Simulation & Routing"
     cd "$AGENTS_DIR/agent_5_simulation"
-    "$PYTHON" simulate.py
+    "$PYTHON" simulate.py --scenario "$SCENARIO"
     ok "Agent 5 complete → output/simulation.json"
 fi
 

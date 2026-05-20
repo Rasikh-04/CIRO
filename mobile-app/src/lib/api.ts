@@ -7,7 +7,7 @@ import type {
 } from '../types';
 
 const BACKEND_URL =
-  process.env.EXPO_PUBLIC_BACKEND_URL || 'http://localhost:8000';
+  process.env.EXPO_PUBLIC_BACKEND_URL || 'http://192.168.100.4:8000';
 
 async function get<T>(path: string): Promise<T> {
   const res = await fetch(`${BACKEND_URL}${path}`, {
@@ -30,7 +30,7 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 export async function fetchActiveCrises(): Promise<CrisisEvent[]> {
   try {
     const data = await get<CrisisEvent[]>('/api/v2/crisis/active');
-    return Array.isArray(data) ? data : [];
+    return Array.isArray(data) ? data.map((c: any) => ({ ...c, id: c.crisis_id || c.id })) : [];
   } catch {
     return [];
   }
@@ -38,7 +38,7 @@ export async function fetchActiveCrises(): Promise<CrisisEvent[]> {
 
 export async function fetchCrisisDetail(id: string): Promise<CrisisDetail | null> {
   try {
-    return await get<CrisisDetail>(`/api/v2/crisis/${id}`);
+    return await get<CrisisDetail>(`/api/v2/crisis/full/${id}`);
   } catch {
     return null;
   }
@@ -46,10 +46,17 @@ export async function fetchCrisisDetail(id: string): Promise<CrisisDetail | null
 
 export async function fetchSafeRoutes(crisisId: string): Promise<SafeRoute[]> {
   try {
-    const data = await get<{ routes: SafeRoute[] }>(
-      `/api/v2/mobile/routes/${crisisId}`
-    );
-    return data.routes ?? [];
+    const data = await get<any>(`/api/v2/crisis/full/${crisisId}`);
+    const routes: any[] = data?.simulation?.simulation?.routes ?? [];
+    return routes.map((r: any) => ({
+      name: r.unit ?? 'Unit',
+      via: r.route?.via ?? '',
+      distance_km: r.route?.distance_km ?? 0,
+      eta_minutes: r.route?.duration_min ?? 0,
+      extra_minutes: 0,
+      risk_level: 'monitor' as SafeRoute['risk_level'],
+      waypoints: (r.route?.waypoints ?? []).map(([lat, lng]: [number, number]) => ({ lat, lng })),
+    }));
   } catch {
     return [];
   }
@@ -61,29 +68,22 @@ export async function fetchNearbyAlerts(
   radiusKm = 10
 ): Promise<PublicAlert[]> {
   try {
-    const data = await get<PublicAlert[]>(
-      `/api/v2/mobile/alerts?lat=${lat}&lng=${lng}&radius=${radiusKm}`
-    );
-    return Array.isArray(data) ? data : [];
+    const data = await get<PublicAlert[]>('/api/v2/crisis/active');
+    return Array.isArray(data) ? data.map((c: any) => ({ ...c, id: c.crisis_id || c.id })) : [];
   } catch {
     return [];
   }
 }
 
 export async function fetchVoiceAlertUrl(crisisId: string): Promise<string | null> {
-  try {
-    const data = await get<{ url: string }>(`/api/v2/mobile/crisis/${crisisId}/audio`);
-    return data.url ?? null;
-  } catch {
-    return null;
-  }
+  return null;
 }
 
 export async function submitCitizenReport(
   report: CitizenReport
 ): Promise<{ report_id: string; status: string } | null> {
   try {
-    return await post('/api/v2/reports', report);
+    return await post('/api/crisis/detected', report);
   } catch {
     return null;
   }
